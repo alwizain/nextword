@@ -1,0 +1,534 @@
+{% load static %}
+{% load customfunction %}
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<title>Next Word Predictor</title>
+	<style>
+		/* body{
+			background-image: linear-gradient(to right, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+
+		} */
+
+		body {
+          overflow-y: scroll;  /* Hide scrollbars */
+          -ms-overflow-style: none;  /* IE dan Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Sembunyikan scrollbar dari Chrome, Safari dan Opera */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+		header{
+			padding: 10px;
+			margin: 10px;
+			font-family: "Trebuchet MS", Helvetica, sans-serif;
+			text-align: center;
+			background-image: linear-gradient(to right, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+			color: white;
+		}
+
+		footer{
+			background-color: #94af76;
+			background-image: linear-gradient(to right, #d16ba5, #c777b9, #ba83ca, #aa8fd8, #9a9ae1, #8aa7ec, #79b3f4, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+			color: white;
+			text-align: center;
+			position: fixed;
+  			width: 100%;
+  			right: 0;
+  			bottom: 0;
+		}
+
+		.credit{
+			align-self: left;
+			color: white;
+		}
+
+		input{
+		    padding: 10px;
+		    margin: 10px;
+		    margin-bottom: 0px;
+		    height: 30px;
+		    width: 500px;
+		    border:2px solid #a9a9a9;
+		    outline:none;
+		}
+
+		input:hover{
+	    	border-color: #a0a0a0 #b9b9b9 #b9b9b9 #b9b9b9;
+		}
+
+		input:focus{
+		    border-color:#fe9d4d;
+		}
+
+		input[type="submit"] {
+		    border-radius: 2px;
+		    background: #f2f2f2;
+		    border: 1px solid #f2f2f2;
+		    color: #757575;
+		    cursor: default;
+		    font-size: 14px;
+		    font-weight: bold;
+		    width: 300px;
+		    padding: 0 16px;
+		    height:36px;
+		}
+
+		input[type="submit"]:hover {
+		    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+		    background: #f8f8f8;
+		    border: 1px solid #c6c6c6;
+		    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+		    color: #222;
+		}
+
+		.dropdown{
+			border: 1px solid #c6c6c6;
+		    margin: 10px;
+		    margin-top: 0px;
+		    width: 500px;
+		    background-color: white;
+		}
+
+		.dropdown-content{
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+			text-align: left;
+			/* margin-left: 10px; */
+		}
+
+		.dropdown-content:hover {
+			background-color: #ddd;
+			cursor: pointer;
+		}
+
+
+		.dropbtn {
+		  background-color: #3498DB;
+		  color: white;
+		  padding: 16px;
+		  font-size: 16px;
+		  border: none;
+		  cursor: pointer;
+		}
+
+		.dropbtn:hover, .dropbtn:focus {
+		  background-color: #2980B9;
+		}
+
+		.dropdownbtn {
+		  position: relative;
+		  display: inline-block;
+		}
+
+		.dropdownbtn-content {
+		  display: none;
+		  position: absolute;
+		  background-color: #f1f1f1;
+		  min-width: 160px;
+		  overflow: auto;
+		  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+		  z-index: 1;
+		}
+
+		.dropdownbtn-content a {
+		  color: black;
+		  padding: 12px 16px;
+		  text-decoration: none;
+		  display: block;
+		}
+
+		.dropdownbtn a:hover {background-color: #ddd;}
+
+		.showbtn {display: block;}
+
+		.book-wrapper{
+			max-width: 250px;
+			margin: 10px;
+			border: 1px solid #a3a2a2;
+			padding: 10px;
+			display: inline-block;
+			background-color: white;
+		}
+		.book-wrapper .btn{
+			width: 80%;
+			margin: auto;
+		}
+		.book-wrapper p{
+			color: #019610fb;
+		}
+		.book-wrapper a{
+			display: block;
+			padding-top:5px;
+			font-family: Arial, Helvetica, sans-serif;
+			color: #0066c0;
+			text-decoration: none;
+			white-space: normal;
+			letter-spacing: normal;
+			font-size: 13px!important;
+			line-height: 19px!important;
+		}
+		.book-wrapper a i {
+			margin-right: 7px;
+		}
+		.coverpage img{
+			height: 200px;
+			width: 150px;
+			margin: auto;
+		}
+		.card-body img{
+			max-width: 30px;
+		}
+
+	</style>
+</head>
+<body>
+	
+		<div class="container-fluid">
+			<!-- Navbar -->
+			<nav class="navbar navbar-expand-lg navbar-dark shadow-5-strong">
+				<!-- Container wrapper -->
+				<div class="container" style="margin-top: 10pt;">
+					<!-- Navbar brand -->
+					<a class="navbar-brand" href="/">#CariBuku</a>
+				
+					<!-- Toggle button -->
+					<button
+						class="navbar-toggler"
+						type="button"
+						data-mdb-toggle="collapse"
+						data-mdb-target="#navbarSupportedContent"
+						aria-controls="navbarSupportedContent"
+						aria-expanded="false"
+						aria-label="Toggle navigation"
+					>
+						<i class="fas fa-bars"></i>
+					</button>
+				
+					<!-- Collapsible wrapper -->
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<!-- Left links -->
+						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+							<li class="nav-item">
+								<a class="nav-link active" aria-current="page" href="#">Hubungi Kami</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link active" href="#">Tentang</a>
+							</li>
+						</ul>
+						<!-- Left links -->
+					</div>
+					<!-- Collapsible wrapper -->
+				</div>
+				<!-- Container wrapper -->
+			</nav>
+			<!-- Navbar -->
+		</div>
+	
+
+	
+		<img src="\static\images\book.jpg" class="img-fluid" alt="..." style="margin-top: -300pt;">
+		<!-- Image by jcomp on Freepik -->
+
+		<div class="container-fluid">
+			<div class="landingtext text-center" style="margin-top: -450pt; color: aliceblue;">
+				<h1>#CariBuku Tidak Sesulit Melupakan Masa Lalu,<br> Cari Judul Buku Anda Dengan Mudah</h1>
+			</div>
+	
+			<br>
+			<main style="text-align: center;">
+				<div style="display: inline-block;">
+					
+					<form action="{% url 'search:search' %}" autocomplete="off" method="GET">
+						<input type="search" id="textInput" onkeyup="callSearchAPI(event)" name="q" placeholder="Tulis judul buku yang Anda cari..." value="{{search}}"> 
+						<button type="submit" class="btn btn-light">Cari</button>
+					</form>
+
+					<!-- onkeyup="callSearchAPI()" -->
+					<div class = "dropdown" id="dropdown">
+						<!-- <option class="dropdown-content" value=0 onclick="appendWords(value)">A</option>
+						<option class="dropdown-content" value=1 onclick="appendWords(value)">B</option>
+						<option class="dropdown-content" value=2 onclick="appendWords(value)">C</option> -->
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<br><br>
+		<br><br>
+
+		<!-- <div id="searchResults">
+			<div class="container text-center">
+				{% for data in data %}
+				<div class="book-wrapper text-center">
+					<div class="coverpage">
+						<img src="{{ data.cover_buku }}"/>
+					</div>
+					<a>{{ data.judul_buku|text_short }}...</a>
+					<p> {{ data.stok }} </p>
+				</div>
+				{% endfor %}
+
+				{% if data|length > 0 %}
+				<div class="d-pagination">
+					<ul class="pagination">
+					{% if data.has_previous %}
+						<li class="page-item">
+							<a class="page-link" href="?page=1">First</a>
+						</li>								
+						<li class="page-item">
+							<a class="page-link" href="?page={{ data.previous_page_number }}">Previous</a>
+						</li>
+					{% endif %}
+					{% for ord in data.paginator.page_range %}
+						{% if data.number == ord %}
+							<li class="page-item active">
+								<span class="page-link">{{ ord }}
+									<span class="sr-only">(current)</span>
+								</span>
+							</li>
+						{% elif ord > data.number|add:'-3' and ord < data.number|add:'3' %}
+							<li class="page-item">
+								<a class="page-link" href="?page={{ ord }}">{{ ord }}</a>
+							</li>
+
+						{% endif %}
+
+					{% endfor %}
+					{% if data.has_next %}
+						<li class="page-item">
+							<a class="page-link" href="?page={{ data.next_page_number }}">Next</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="?page={{ data.paginator.num_pages }}">Last</a>
+						</li>
+					{% endif %}
+					</ul>
+				</div>
+				{% else %}
+				<h3 class="text-center mt-5">Pencarian tidak ditemukan.</h3>
+				{% endif %}	
+			</div> -->
+		<div id="searchResults">
+			{% for data in search_results %}
+				<div class="book-wrapper text-center">
+					<div class="coverpage">
+						<img src="{{ data.cover_buku }}"/>
+					</div>
+					<a>{{ data.judul_buku|text_short }}...</a>
+					<p> {{ data.stok }} </p>
+				</div>
+			{% empty %}
+				<h3 class="text-center mt-5">Pencarian tidak ditemukan.</h3>
+			{% endfor %}
+
+			{% if search_results.has_other_pages %}
+				<div class="d-pagination">
+					<ul class="pagination">
+						{% if search_results.has_previous %}
+							<li class="page-item">
+								<a class="page-link" href="?page=1">First</a>
+							</li>								
+							<li class="page-item">
+								<a class="page-link" href="?page={{ search_results.previous_page_number }}">Previous</a>
+							</li>
+						{% endif %}
+						
+						{% for ord in search_results.paginator.page_range %}
+							{% if search_results.number == ord %}
+								<li class="page-item active">
+									<span class="page-link">{{ ord }}
+										<span class="sr-only">(current)</span>
+									</span>
+								</li>
+							{% elif ord > search_results.number|add:'-3' and ord < search_results.number|add:'3' %}
+								<li class="page-item">
+									<a class="page-link" href="?page={{ ord }}">{{ ord }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+						
+						{% if search_results.has_next %}
+							<li class="page-item">
+								<a class="page-link" href="?page={{ search_results.next_page_number }}">Next</a>
+							</li>
+							<li class="page-item">
+								<a class="page-link" href="?page={{ search_results.paginator.num_pages }}">Last</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+			{% endif %}
+		</div>
+
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+
+</body>
+	<script type="text/javascript">
+		var pressedValue = -1;
+		var textInTextField = document.getElementById('textInput');
+		var dropdownContentList;
+		textInTextField.addEventListener("keyup", function(event) {
+			if(event.key != "ArrowDown" && event.key !='ArrowUp' && event.key != "Enter") {
+				callSearchAPI();
+			}
+
+	    	if (event.key === "Enter") {
+	    		if(pressedValue == -1) return;
+	        	console.log('Event enter key:?', event.key);
+	        	appendWords(pressedValue);
+	    	}
+	    	else if (event.key === "ArrowDown"){
+	    		var removedColorIndex = pressedValue; 
+	    		pressedValue++;
+	    		if (pressedValue > 2) {
+	    			pressedValue = 0;
+	    		}
+	    		if(pressedValue >= 0 && removedColorIndex >=0){
+	    			dropdownContentList[removedColorIndex].style.backgroundColor = 'white';
+	    		}
+	    		if(pressedValue != -1){
+	    			dropdownContentList[pressedValue].style.backgroundColor = '#ddd';
+	    		}
+	    		
+	    		console.log('Event key:', event.key, event);
+	    	}else if(event.key ==='ArrowUp'){
+	    		var removedColorIndex = pressedValue; 
+	    		pressedValue--;
+	    		if (pressedValue < 0) {
+	    			pressedValue = 2;
+	    		}
+	    	}
+	    	if(pressedValue >= 0 && removedColorIndex >=0){
+	    		dropdownContentList[removedColorIndex].style.backgroundColor = 'white';
+	    	}
+	    	if(pressedValue != -1){
+	    		dropdownContentList[pressedValue].style.backgroundColor = '#ddd';
+	    	}
+	    	
+	    	console.log('KeyboardSelectedValue:', pressedValue);
+		});
+
+		function changeOptionBackgroundColor(){
+			var dropdownContentList = document.getElementsByClassName('dropdown-content');
+			
+		}
+		
+		function callSearchAPI(event){
+			let textInTextField = document.getElementById('textInput').value;
+			console.log(textInTextField);
+
+			// Split the input string into an array of words
+			let words = textInTextField.split(' ');
+
+			// Truncate the array to the first 5 elements
+			if (words.length > 8) {
+				// Clear the dropdown and return from the function
+				document.getElementById('dropdown').innerHTML = "";
+    			return;
+			}
+
+			// Join the array back into a string
+			textInTextField = words.join(' ');
+
+			if(textInTextField == ''){
+				document.getElementById('dropdown').innerHTML = "";
+			}else{
+				//call API with textInTextField
+				let url = 'http://127.0.0.1:8000/prediction/';
+				let data = {text: textInTextField};
+
+				fetch(url, {
+				method: 'POST', // or 'PUT'
+				body: JSON.stringify(data), // data can be `string` or {object}!
+				headers:{
+					'Content-Type': 'application/json'
+				}
+				})
+				.then(res => res.json())
+				.then(response => {
+					console.log('Success:', JSON.stringify(response))
+					let nextWordList = [response['predicted_words'][0]['word'], response['predicted_words'][1]['word']]; // replace with the word return from API
+					listSuggestion(nextWordList);
+				})
+			}
+			
+			// Mendapatkan nilai input saat ini
+			var searchQuery = event.target.value;
+				
+			// Mengirim permintaan pencarian hanya jika panjang input lebih dari 2 karakter
+			if (searchQuery.length > 2) {
+				// Menggunakan XMLHttpRequest atau fetch API untuk mengirim permintaan pencarian ke server
+				// dan menampilkan hasilnya di div dengan id "searchResults"
+				// Misalnya, menggunakan fetch API:
+				fetch('/search/?query=' + encodeURIComponent(searchQuery))
+				.then(function(response) {
+					return response.text();
+				})
+				.then(function(data) {
+					document.getElementById('searchResults').innerHTML = data;
+				})
+				.catch(function(error) {
+					console.log('Error:', error);
+				});
+			} else {
+				document.getElementById('searchResults').innerHTML = '';
+			}
+
+			
+		};
+		
+
+		function appendWords(selectValue) {
+			console.log(selectValue);
+			var selectWordArray = document.getElementsByClassName('dropdown-content');
+			// console.log(selectWordArray[selectValue]);
+			document.getElementById('textInput').value = selectWordArray[selectValue].text;
+			callSearchAPI();
+		}
+
+
+		function listSuggestion(nextWordList){
+			document.getElementById('dropdown').innerHTML = "<option class=\"dropdown-content\" value=0 onclick=\"appendWords(value)\"></option><option class=\"dropdown-content\" value=1 onclick=\"appendWords(value)\"></option>";
+			let textInTextField = document.getElementById('textInput').value;
+			console.log(textInTextField);
+			for (var i = 0; i < nextWordList.length ; i++) {
+				document.getElementsByClassName('dropdown-content')[i].text = textInTextField +' '+nextWordList[i];
+			}
+			//added
+			dropdownContentList = document.getElementsByClassName('dropdown-content');
+			pressedValue = -1
+		}
+
+		function myDropDownBtnFunction() {
+  			document.getElementById("myDropdown").classList.toggle("showbtn");
+		}
+
+		window.onclick = function(event) {
+		  if (!event.target.matches('.dropbtn')) {
+		    var dropdowns = document.getElementsByClassName("dropdownbtn-content");
+		    var i;
+		    for (i = 0; i < dropdowns.length; i++) {
+		      var openDropdown = dropdowns[i];
+		      if (openDropdown.classList.contains('showbtn')) {
+		        openDropdown.classList.remove('showbtn');
+		      }
+		    }
+		  }
+		}
+
+	</script>
+
+	<!-- <footer>
+		<br><h4>WIX 3001 Soft Computing Next Word Predictor</h4><br>
+	</footer> -->
+</html>
